@@ -1,0 +1,40 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.                 AULA2.
+
+      *AUTOR                       IGOR CRISPIM
+      *DATA                        12/06/2025
+      *DATA-ATUALIZACAO            12/06/2025
+      *PROPÓSITO                   SOMA DE NÚMEROS
+
+       DATA DIVISION.
+
+
+       FILE SECTION.
+
+
+       WORKING-STORAGE SECTION.
+       01  WS-NUMERO-1     PIC     9(010)      VALUE ZEROS.
+       01  WS-NUMERO-2     PIC     9(010)      VALUE ZEROS.
+       01  WS-RESULTADO    PIC     9(011)      VALUE ZEROS.
+
+
+
+       PROCEDURE DIVISION.
+       WS-MAIN.
+           DISPLAY 'O PROGRAMA IRA REALIZAR A SOMA DE DOIS NUMEROS!'
+           DISPLAY 'DIGITE O PRIMEIRO NUMERO: '
+           ACCEPT WS-NUMERO-1
+           DISPLAY 'DIGITE O SEGUNDO NUMERO: '
+           ACCEPT WS-NUMERO-2
+           COMPUTE WS-RESULTADO = WS-NUMERO-1 + WS-NUMERO-2
+           DISPLAY 'RESULTADO SOMA: ' WS-RESULTADO
+           COMPUTE WS-RESULTADO = (WS-NUMERO-1 * WS-NUMERO-2)
+           DISPLAY 'RESULTADO MULTIPLICACAO: ' WS-RESULTADO
+
+
+
+
+
+
+           STOP RUN.
+       END PROGRAM AULA2.
