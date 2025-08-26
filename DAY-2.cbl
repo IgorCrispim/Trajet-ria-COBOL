@@ -21,9 +21,16 @@
        01 FILLER REDEFINES WS-DIAS-SEMANA OCCURS 7 TIMES.
           03 WS-NUM-DIA             PIC 9(02).
           03 WS-NOME-DIA            PIC X(07).
-          03 WS-EVENTO OCCURS 5 TIMES.
-             05 WS-HORA             PIC X(05).
-             05 WS-DESC             PIC X(40).
+
+       01 WS-AGENDA-SEMANAL.
+          03 WS-DIAS-AGENDA OCCURS 7 TIMES.
+             05 WS-NUM-AGENDA       PIC 9(02).
+             05 WS-NOME-AGENDA      PIC X(07).
+             05 WS-EVENTO OCCURS 5 TIMES.
+                07 WS-HORA          PIC X(05).
+                07 WS-DESC          PIC X(99).
+
+
 
        77 WS-INDEX                  PIC 9     VALUE ZEROS.
        77 WS-INDEX-2                PIC 9     VALUE ZEROS.
@@ -39,7 +46,17 @@
       *      FUNÇÃO INICIAL DO PROGRAMA - PEGA O DIA DA SEMANA
       ******************************************************************
        P100-MAIN.
-             DISPLAY 'QUAL O DIA DA SEMANA DESEJA ADICIONAR EVENTOS ?'
+
+             INITIALISE WS-AGENDA-SEMANAL.
+
+             MOVE ZEROS TO WS-INDEX
+             PERFORM VARYING WS-INDEX FROM 1 BY 1 UNTIL WS-INDEX > 7
+             MOVE WS-NUM-DIA(WS-INDEX)     TO WS-NUM-AGENDA(WS-INDEX)
+             MOVE WS-NOME-DIA(WS-INDEX)    TO WS-NOME-AGENDA(WS-INDEX)
+             END-PERFORM
+
+
+             DISPLAY WS-NUM-DIA(1) ' ' WS-NOME-DIA(1)
              DISPLAY WS-NUM-DIA(2) ' ' WS-NOME-DIA(2)
              DISPLAY WS-NUM-DIA(3) ' ' WS-NOME-DIA(3)
              DISPLAY WS-NUM-DIA(4) ' ' WS-NOME-DIA(4)
@@ -55,7 +72,14 @@
       ******************************************************************
        P200-AGENDA.
              MOVE ZEROS TO WS-INDEX
+             DISPLAY 'QUAL O DIA DA SEMANA DESEJA ADICIONAR EVENTOS ?'
              ACCEPT WS-DIA-USUARIO
+
+             IF WS-DIA-USUARIO > 7 OR WS-DIA-USUARIO < 1 THEN
+                DISPLAY 'DIA FORA DO ESCOPO, TENTE NOVAMENTE'
+                PERFORM P200-AGENDA THRU P200-AGENDA-FIM
+             END-IF
+
              PERFORM VARYING WS-INDEX FROM 1 BY 1 UNTIL WS-INDEX > 7
                 IF  WS-INDEX = WS-NUM-DIA(WS-INDEX)
                 AND WS-INDEX = WS-DIA-USUARIO THEN
@@ -72,9 +96,9 @@
                      '"Y" FOR YES OR "Q" FOR QUIT'
              ACCEPT WS-SAIDA
              IF WS-SAIDA = 'Y' THEN
-                PERFORM P100-MAIN
+                PERFORM P200-AGENDA THRU P200-AGENDA-FIM
              ELSE
-                PERFORM P300-PRINT THRU P300-PRINT-FIM
+                PERFORM P300-PRINT  THRU P300-PRINT-FIM
              END-IF
 
 
@@ -105,8 +129,6 @@
                                ' DESCRICAO: '
                                WS-DESC(WS-INDEX, WS-INDEX-2)
                          DISPLAY ' '
-                      ELSE
-                         DISPLAY 'BUCETINHA'
                       END-IF
                    END-PERFORM
                 END-PERFORM
