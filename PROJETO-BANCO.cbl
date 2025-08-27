@@ -19,7 +19,7 @@
            SELECT ARQ-ID ASSIGN TO "id.dat"
                 ORGANIZATION IS SEQUENTIAL
                 ACCESS MODE  IS SEQUENTIAL
-                FILE STATUS  IS FS-ID.
+                FILE STATUS  IS FS-ID-STATUS.
 
        DATA DIVISION.
        FILE SECTION.
@@ -36,6 +36,7 @@
 
        WORKING-STORAGE SECTION.
        77 FS-CONTA                     PIC XX.
+       77 FS-ID-STATUS                 PIC XX.
        77 FS-ID                        PIC 9(06).
        77 WS-OPCAO                     PIC 9.
        77 WS-VALOR                     PIC 9(07)V99.
@@ -49,14 +50,14 @@
       ******************************************************************
        P100-MAIN.
              OPEN I-O ARQ-CONTA
-                 IF FS-CONTA = "35" THEN
+                 IF FS-CONTA EQUAL TO "35" THEN
                    OPEN OUTPUT ARQ-CONTA
                    CLOSE ARQ-CONTA
                    OPEN I-O ARQ-CONTA
                 END-IF.
 
              OPEN I-O ARQ-ID
-                 IF FS-ID = "35"
+                 IF FS-ID EQUAL TO "35"
                    OPEN OUTPUT ARQ-ID
                    MOVE 0 TO ULT-CONTA
                    WRITE REG-CONTROLE
@@ -86,15 +87,15 @@
 
              EVALUATE WS-OPCAO
 
-                WHEN WS-OPCAO = 1
+                WHEN WS-OPCAO EQUAL TO 1
                    PERFORM P300-CRIAR
-                WHEN WS-OPCAO = 2
+                WHEN WS-OPCAO EQUAL TO 2
                    PERFORM P400-CONSULTAR
-                WHEN WS-OPCAO = 3
+                WHEN WS-OPCAO EQUAL TO 3
                    PERFORM P500-TRANFERENCIA
-                WHEN WS-OPCAO = 4
+                WHEN WS-OPCAO EQUAL TO 4
                    PERFORM P600-DEP-SAQ
-                WHEN WS-OPCAO = 5
+                WHEN WS-OPCAO EQUAL TO 5
                    PERFORM P900-TERMINAL
 
              END-EVALUATE
@@ -162,7 +163,7 @@
                    ACCEPT WS-VALOR
                    MOVE ZEROS TO WS-AUX
                    COMPUTE WS-AUX = SALDO - WS-VALOR
-                   IF SALDO <= 0 OR WS-AUX < 0 THEN
+                   IF SALDO EQUAL TO 0 OR WS-AUX LESS THAN 0 THEN
                       DISPLAY 'CONTA COM SAUDO INSUFICIENTE'
                       DISPLAY 'O SALDO DA CONTA ' NUM-CONTA ' : ' SALDO
                       DISPLAY 'TENTE NOVAMENTE!'
@@ -200,7 +201,7 @@
                      'DIGITE 02 CASO QUEIRA REALIZAR UM DEPOSITO '
              ACCEPT WS-OPCAO
              EVALUATE WS-OPCAO
-                WHEN WS-OPCAO = 1
+                WHEN WS-OPCAO EQUAL TO 1
                    DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
                    DISPLAY 'DIGITE O ID DA CONTA'
                    ACCEPT FS-ID
@@ -220,7 +221,7 @@
                          REWRITE REG-CONTA
                          PERFORM P200-MENU
                    END-READ
-                WHEN WS-OPCAO = 2
+                WHEN WS-OPCAO EQUAL TO 2
                    DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
                    DISPLAY 'DIGITE O ID DA CONTA'
                    ACCEPT FS-ID
