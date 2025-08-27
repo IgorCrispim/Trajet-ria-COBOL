@@ -209,7 +209,7 @@
                       DISPLAY 'O SALDO ATUAL DA CONTA ' CONTA-NUM ' - '
                               SALDO
                       DISPLAY 'RETORNANDO PARA O MENU...'
-                      WRITE REG-CONTA
+                      REWRITE REG-CONTA
                       PERFORM P200-MENU
                 WHEN WS-OPCAO = 2
                    DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
@@ -227,7 +227,7 @@
                       DISPLAY 'O SALDO ATUAL DA CONTA ' CONTA-NUM ' - '
                               SALDO
                       DISPLAY 'RETORNANDO PARA O MENU...'
-                      WRITE REG-CONTA
+                      REWRITE REG-CONTA
                       PERFORM P200-MENU
                  END-EVALUATE
 
