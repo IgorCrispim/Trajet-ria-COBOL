@@ -87,15 +87,15 @@
 
              EVALUATE WS-OPCAO
 
-                WHEN WS-OPCAO EQUAL TO 1
+                WHEN 1
                    PERFORM P300-CRIAR
-                WHEN WS-OPCAO EQUAL TO 2
+                WHEN 2
                    PERFORM P400-CONSULTAR
-                WHEN WS-OPCAO EQUAL TO 3
-                   PERFORM P500-TRANFERENCIA
-                WHEN WS-OPCAO EQUAL TO 4
+                WHEN 3
+                   PERFORM P500-TRANsFERENCIA
+                WHEN 4
                    PERFORM P600-DEP-SAQ
-                WHEN WS-OPCAO EQUAL TO 5
+                WHEN 5
                    PERFORM P900-TERMINAL
 
              END-EVALUATE
@@ -132,7 +132,7 @@
              DISPLAY 'INFORME O ID DA CONTA DESEJADA!'
              ACCEPT FS-ID
 
-             READ ARQ-CONTA
+             READ ARQ-CONTA KEY IS FS-ID
                 INVALID KEY
                    DISPLAY 'CONTA NAO ENCONTRADA! TENTE NOVAMENTE'
                    PERFORM P400-CONSULTAR.
@@ -154,7 +154,7 @@
              DISPLAY 'QUAL CONTA IRA REALIZAR A TRANSFERENCIA? '
              DISPLAY 'DIGITE O ID DA CONTA! '
              ACCEPT FS-ID
-             READ ARQ-CONTA
+             READ ARQ-CONTA KEY IS FS-ID
                 INVALID KEY
                    DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                    PERFORM P500-TRANSFERENCIA
@@ -165,7 +165,7 @@
                    COMPUTE WS-AUX = SALDO - WS-VALOR
                    IF SALDO EQUAL TO 0 OR WS-AUX LESS THAN 0 THEN
                       DISPLAY 'CONTA COM SAUDO INSUFICIENTE'
-                      DISPLAY 'O SALDO DA CONTA ' NUM-CONTA ' : ' SALDO
+                      DISPLAY 'O SALDO DA CONTA ' CONTA-NUM ' : ' SALDO
                       DISPLAY 'TENTE NOVAMENTE!'
                       PERFORM P500-TRANSFERENCIA
                    ELSE
@@ -174,7 +174,7 @@
 
                       DISPLAY 'QUAL CONTA IRA RECEBER A TRANSFERENCIA? '
                       ACCEPT FS-ID
-                      READ ARQ-CONTA
+                      READ ARQ-CONTA KEY IS FS-ID
                          INVALID KEY
                             DISPLAY 'CONTA NAO ENCONTRADA, '
                                     'TENTE NOVAMENTE'
@@ -201,13 +201,13 @@
                      'DIGITE 02 CASO QUEIRA REALIZAR UM DEPOSITO '
              ACCEPT WS-OPCAO
              EVALUATE WS-OPCAO
-                WHEN WS-OPCAO EQUAL TO 1
+                WHEN 1
                    DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
                    DISPLAY 'DIGITE O ID DA CONTA'
                    ACCEPT FS-ID
-                   READ ARQ-CONTA
+                   READ ARQ-CONTA KEY IS FS-ID
                       INVALID KEY
-                         'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
+                         DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                          PERFORM P600-DEP-SAQ
                       NOT INVALID KEY
                          DISPLAY 'QUAL O VALOR DA MOVIMENTACAO? '
@@ -221,13 +221,13 @@
                          REWRITE REG-CONTA
                          PERFORM P200-MENU
                    END-READ
-                WHEN WS-OPCAO EQUAL TO 2
+                WHEN 2
                    DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
                    DISPLAY 'DIGITE O ID DA CONTA'
                    ACCEPT FS-ID
-                   READ ARQ-CONTA
+                   READ ARQ-CONTA KEY IS FS-ID
                       INVALID KEY
-                         'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
+                         DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                          PERFORM P600-DEP-SAQ
                       NOT INVALID KEY
                          DISPLAY 'QUAL O VALOR DA MOVIMENTACAO? '
@@ -241,7 +241,7 @@
                          REWRITE REG-CONTA
                          PERFORM P200-MENU
                    END-READ
-                 END-EVALUATE
+             END-EVALUATE
 
 
        .
