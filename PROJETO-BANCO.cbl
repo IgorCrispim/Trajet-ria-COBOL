@@ -131,10 +131,10 @@
              DISPLAY 'INFORME O ID DA CONTA DESEJADA!'
              ACCEPT FS-ID
 
-             READ REG-CONTA INVALID KEY
+             READ ARQ-CONTA INVALID KEY
                 DISPLAY 'CONTA NAO ENCONTRADA! TENTE NOVAMENTE'
                 PERFORM P400-CONSULTAR.
-             READ REG-CONTA NOT INVALID KEY
+             READ ARQ-CONTA NOT INVALID KEY
                 DISPLAY 'DADOS DA CONTA ' FS-ID
                 DISPLAY '**********************************************'
                 DISPLAY 'NOME: '          NOME
@@ -151,10 +151,10 @@
              DISPLAY 'QUAL CONTA IRA REALIZAR A TRANSFERENCIA? '
              DISPLAY 'DIGITE O ID DA CONTA! '
              ACCEPT FS-ID
-             READ REG-CONTA INVALID KEY
+             READ ARQ-CONTA INVALID KEY
                 DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                 PERFORM P500-TRANSFERENCIA
-             READ REG-CONTA NOT INVALID KEY
+             READ ARQ-CONTA NOT INVALID KEY
                 DISPLAY 'QUAL O VALOR DA TRANSFERENCIA? '
                 ACCEPT WS-VALOR
                 MOVE ZEROS TO WS-AUX
@@ -170,10 +170,10 @@
 
                    DISPLAY 'QUAL CONTA IRA RECEBER A TRANSFERENCIA? '
                    ACCEPT FS-ID
-                   READ REG-CONTA  INVALID KEY
+                   READ ARQ-CONTA  INVALID KEY
                       DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                       PERFORM P500-TRANSFERENCIA
-                   READ REG-CONTA NOT INVALID KEY
+                   READ ARQ-CONTA NOT INVALID KEY
                       MOVE ZEROS TO WS-AUX
                       COMPUTE WS-AUX = SALDO + WS-VALOR
                       MOVE WS-AUX TO SALDO
@@ -197,10 +197,10 @@
                    DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
                    DISPLAY 'DIGITE O ID DA CONTA'
                    ACCEPT FS-ID
-                   READ REG-CONTA INVALID KEY
+                   READ ARQ-CONTA INVALID KEY
                       'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                       PERFORM P600-DEP-SAQ
-                   READ REG-CONTA NOT INVALID KEY
+                   READ ARQ-CONTA NOT INVALID KEY
                       DISPLAY 'QUAL O VALOR DA MOVIMENTACAO? '
                       ACCEPT WS-VALOR
                       COMPUTE WS-AUX = SALDO + WS-VALOR
@@ -215,10 +215,10 @@
                    DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
                    DISPLAY 'DIGITE O ID DA CONTA'
                    ACCEPT FS-ID
-                   READ REG-CONTA INVALID KEY
+                   READ ARQ-CONTA INVALID KEY
                       'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                       PERFORM P600-DEP-SAQ
-                   READ REG-CONTA NOT INVALID KEY
+                   READ ARQ-CONTA NOT INVALID KEY
                       DISPLAY 'QUAL O VALOR DA MOVIMENTACAO? '
                       ACCEPT WS-VALOR
                       COMPUTE WS-AUX = SALDO - WS-VALOR
