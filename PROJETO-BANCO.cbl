@@ -41,6 +41,7 @@
        77 WS-OPCAO                     PIC 9.
        77 WS-VALOR                     PIC 9(07)V99.
        77 WS-AUX                       PIC 9(07)V99.
+       77 WS-ERRO                      PIC 9 VALUE ZERO.
 
 
 
@@ -71,6 +72,7 @@
       *      FUNÇÃO DE IMPLEMENTAÇÃO DO MENU DO SISTEMA
       ******************************************************************
        P200-MENU.
+             MOVE ZEROS TO WS-ERRO
              DISPLAY'**************************************************'
              DISPLAY 'QUAL OPERACAO DESEJA REALIZAR? '
              DISPLAY '01 - CRIAR UMA CONTA NOVA'
@@ -116,8 +118,8 @@
              MOVE ZEROS TO SALDO
 
              DISPLAY 'CRIANDO CONTA: ' CONTA-NUM
-             DISPLAY 'PARABENS ' NOME ' A SUA CONTA FOI CRIADA COM '
-                     'SUCESSO!'
+             DISPLAY 'PARABENS ' NOME
+             DISPLAY ' A SUA CONTA FOI CRIADA COM SUCESSO! '
 
              WRITE REG-CONTA
 
@@ -135,8 +137,15 @@
 
              READ ARQ-CONTA RECORD KEY IS CONTA-NUM
                 INVALID KEY
+                   ADD 1 TO WS-ERRO
                    DISPLAY 'CONTA NAO ENCONTRADA! TENTE NOVAMENTE'
-                   PERFORM P400-CONSULTAR
+                   IF WS-ERRO GREATER THAN 3 THEN
+                      DISPLAY 'MUITOS ERROS CONSECUTIVOS'
+                      DISPLAY 'REDIRECIONANDO PARA O MENU...'
+                      PERFORM P200-MENU
+                   ELSE
+                      PERFORM P400-CONSULTAR
+                   END-IF
                 NOT INVALID KEY
                    DISPLAY 'DADOS DA CONTA ' FS-ID
                    DISPLAY '*******************************************'
@@ -166,10 +175,17 @@
                    MOVE ZEROS TO WS-AUX
                    COMPUTE WS-AUX = SALDO - WS-VALOR
                    IF SALDO EQUAL TO 0 OR WS-AUX LESS THAN 0 THEN
-                      DISPLAY 'CONTA COM SAUDO INSUFICIENTE'
-                      DISPLAY 'O SALDO DA CONTA ' CONTA-NUM ' : ' SALDO
-                      DISPLAY 'TENTE NOVAMENTE!'
-                      PERFORM P500-TRANSFERENCIA
+                      ADD 1 TO WS-ERRO
+                      IF WS-ERRO GREATER THAN 3 THEN
+                         DISPLAY 'MUITOS ERROS CONSECUTIVOS'
+                         DISPLAY 'REDIRECIONANDO PARA O MENU...'
+                         PERFORM P200-MENU
+                      ELSE
+                         DISPLAY 'CONTA COM SAUDO INSUFICIENTE'
+                         DISPLAY 'O SALDO DA CONTA ' CONTA-NUM
+                                 ' : ' SALDO
+                         DISPLAY 'TENTE NOVAMENTE!'
+                         PERFORM P500-TRANSFERENCIA
                    ELSE
                       MOVE WS-AUX TO SALDO
                       REWRITE REG-CONTA
@@ -179,9 +195,15 @@
                       MOVE FS-ID TO CONTA-NUM
                       READ ARQ-CONTA RECORD KEY IS CONTA-NUM
                          INVALID KEY
-                            DISPLAY 'CONTA NAO ENCONTRADA, '
-                                    'TENTE NOVAMENTE'
-                            PERFORM P500-TRANSFERENCIA
+                            ADD 1 TO WS-ERRO
+                            IF WS-ERRO GREATER THAN 3 THEN
+                               DISPLAY 'MUITOS ERROS CONSECUTIVOS'
+                               DISPLAY 'REDIRECIONANDO PARA O MENU...'
+                               PERFORM P200-MENU
+                            ELSE
+                               DISPLAY 'CONTA NAO ENCONTRADA, '
+                                       'TENTE NOVAMENTE'
+                               PERFORM P500-TRANSFERENCIA
                          NOT INVALID KEY
                             MOVE ZEROS TO WS-AUX
                             COMPUTE WS-AUX = SALDO + WS-VALOR
@@ -201,7 +223,7 @@
        P600-DEP-SAQ.
              MOVE ZEROS TO WS-OPCAO
              DISPLAY 'DIGITE 01 CASO QUEIRA REALIZAR UM DEPOSITO '
-             DISPLAY 'DIGITE 02 CASO QUERIA REALIZAR UM SAQUE OU '
+             DISPLAY 'DIGITE 02 CASO QUERIA REALIZAR UM SAQUE '
              ACCEPT WS-OPCAO
              EVALUATE WS-OPCAO
                 WHEN 1
@@ -211,8 +233,15 @@
                    MOVE FS-ID TO CONTA-NUM
                    READ ARQ-CONTA RECORD KEY IS CONTA-NUM
                       INVALID KEY
-                         DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
-                         PERFORM P600-DEP-SAQ
+                         ADD 1 TO WS-ERRO
+                         IF WS-ERRO GREATER THAN 3 THEN
+                            DISPLAY 'MUITOS ERROS CONSECUTIVOS'
+                            DISPLAY 'REDIRECIONANDO PARA O MENU...'
+                            PERFORM P200-MENU
+                         ELSE
+                            DISPLAY 'CONTA NAO ENCONTRADA,'
+                                    ' TENTE NOVAMENTE'
+                            PERFORM P600-DEP-SAQ
                       NOT INVALID KEY
                          DISPLAY 'QUAL O VALOR DA MOVIMENTACAO? '
                          ACCEPT WS-VALOR
@@ -220,7 +249,7 @@
                          MOVE WS-AUX TO SALDO
                          DISPLAY 'DEPOSITO REALIZADO COM SUCESSO! '
                          DISPLAY 'O SALDO ATUAL DA CONTA ' CONTA-NUM
-                                 ' - ' SALDO
+                                 ' : ' SALDO
                          DISPLAY 'RETORNANDO PARA O MENU...'
                          REWRITE REG-CONTA
                          PERFORM P200-MENU
@@ -232,19 +261,32 @@
                    MOVE FS-ID TO CONTA-NUM
                    READ ARQ-CONTA RECORD KEY IS CONTA-NUM
                       INVALID KEY
-                         DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
-                         PERFORM P600-DEP-SAQ
+                         ADD 1 TO WS-ERRO
+                         IF WS-ERRO GREATER THAN 3 THEN
+                            DISPLAY 'MUITOS ERROS CONSECUTIVOS'
+                            DISPLAY 'REDIRECIONANDO PARA O MENU...'
+                            PERFORM P200-MENU
+                         ELSE
+                            DISPLAY 'CONTA NAO ENCONTRADA,'
+                                    ' TENTE NOVAMENTE'
+                            PERFORM P600-DEP-SAQ
                       NOT INVALID KEY
                          DISPLAY 'QUAL O VALOR DA MOVIMENTACAO? '
                          ACCEPT WS-VALOR
-                         COMPUTE WS-AUX = SALDO - WS-VALOR
-                         MOVE WS-AUX TO SALDO
-                         DISPLAY 'SAQUE REALIZADO COM SUCESSO! '
-                         DISPLAY 'O SALDO ATUAL DA CONTA ' CONTA-NUM
-                                 ' - ' SALDO
-                         DISPLAY 'RETORNANDO PARA O MENU...'
-                         REWRITE REG-CONTA
-                         PERFORM P200-MENU
+                         IF WS-VALOR GREATER THAN SALDO THEN
+                            DISPLAY 'SALDO INSUFICIENTE, TRANSACAO '
+                                    'CANCELADA'
+                            PERFORM P200-MENU
+                         ELSE
+                            COMPUTE WS-AUX = SALDO - WS-VALOR
+                            MOVE WS-AUX TO SALDO
+                            DISPLAY 'SAQUE REALIZADO COM SUCESSO! '
+                            DISPLAY 'O SALDO ATUAL DA CONTA ' CONTA-NUM
+                                    ' : ' SALDO
+                            DISPLAY 'RETORNANDO PARA O MENU...'
+                            REWRITE REG-CONTA
+                            PERFORM P200-MENU
+                         END-IF
                    END-READ
              END-EVALUATE
 
