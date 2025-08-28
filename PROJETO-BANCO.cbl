@@ -131,8 +131,9 @@
              DISPLAY 'QUAL CONTA DESEJA CONSULTAR ?'
              DISPLAY 'INFORME O ID DA CONTA DESEJADA!'
              ACCEPT FS-ID
+             MOVE FS-ID TO CONTA-NUM
 
-             READ ARQ-CONTA RECORD KEY IS FS-ID
+             READ ARQ-CONTA RECORD KEY IS CONTA-NUM
                 INVALID KEY
                    DISPLAY 'CONTA NAO ENCONTRADA! TENTE NOVAMENTE'
                    PERFORM P400-CONSULTAR
@@ -154,7 +155,8 @@
              DISPLAY 'QUAL CONTA IRA REALIZAR A TRANSFERENCIA? '
              DISPLAY 'DIGITE O ID DA CONTA! '
              ACCEPT FS-ID
-             READ ARQ-CONTA RECORD KEY IS FS-ID
+             MOVE FS-ID TO CONTA-NUM
+             READ ARQ-CONTA RECORD KEY IS CONTA-NUM
                 INVALID KEY
                    DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                    PERFORM P500-TRANSFERENCIA
@@ -174,7 +176,8 @@
 
                       DISPLAY 'QUAL CONTA IRA RECEBER A TRANSFERENCIA? '
                       ACCEPT FS-ID
-                      READ ARQ-CONTA RECORD KEY IS FS-ID
+                      MOVE FS-ID TO CONTA-NUM
+                      READ ARQ-CONTA RECORD KEY IS CONTA-NUM
                          INVALID KEY
                             DISPLAY 'CONTA NAO ENCONTRADA, '
                                     'TENTE NOVAMENTE'
@@ -197,15 +200,16 @@
       ******************************************************************
        P600-DEP-SAQ.
              MOVE ZEROS TO WS-OPCAO
+             DISPLAY 'DIGITE 01 CASO QUEIRA REALIZAR UM DEPOSITO '
              DISPLAY 'DIGITE 02 CASO QUERIA REALIZAR UM SAQUE OU '
-                     'DIGITE 01 CASO QUEIRA REALIZAR UM DEPOSITO '
              ACCEPT WS-OPCAO
              EVALUATE WS-OPCAO
                 WHEN 1
                    DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
                    DISPLAY 'DIGITE O ID DA CONTA'
                    ACCEPT FS-ID
-                   READ ARQ-CONTA RECORD KEY IS FS-ID
+                   MOVE FS-ID TO CONTA-NUM
+                   READ ARQ-CONTA RECORD KEY IS CONTA-NUM
                       INVALID KEY
                          DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                          PERFORM P600-DEP-SAQ
@@ -225,7 +229,8 @@
                    DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
                    DISPLAY 'DIGITE O ID DA CONTA'
                    ACCEPT FS-ID
-                   READ ARQ-CONTA RECORD KEY IS FS-ID
+                   MOVE FS-ID TO CONTA-NUM
+                   READ ARQ-CONTA RECORD KEY IS CONTA-NUM
                       INVALID KEY
                          DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                          PERFORM P600-DEP-SAQ
