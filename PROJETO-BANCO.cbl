@@ -135,17 +135,17 @@
              READ ARQ-CONTA RECORD KEY IS FS-ID
                 INVALID KEY
                    DISPLAY 'CONTA NAO ENCONTRADA! TENTE NOVAMENTE'
+                   PERFORM P400-CONSULTAR
+                NOT INVALID KEY
+                   DISPLAY 'DADOS DA CONTA ' FS-ID
+                   DISPLAY '*******************************************'
+                   DISPLAY 'NOME: '          NOME
+                   DISPLAY 'SALDO: '         SALDO
+                   DISPLAY 'ID: '            CONTA-NUM
+
+                   DISPLAY 'REDIRECIONANDO PARA O MENU...'
                    PERFORM P200-MENU
              END-READ
-
-             DISPLAY 'DADOS DA CONTA ' FS-ID
-             DISPLAY '*******************************************'
-             DISPLAY 'NOME: '          NOME
-             DISPLAY 'SALDO: '         SALDO
-             DISPLAY 'ID: '            CONTA-NUM
-
-             DISPLAY 'REDIRECIONANDO PARA O MENU...'
-             PERFORM P200-MENU
        .
       ******************************************************************
       *      FUNÇÃO QUE REALIZA UMA TRANSFERENCIA BANCARIA ENTRE DUAS CONTAS
@@ -158,7 +158,7 @@
                 INVALID KEY
                    DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                    PERFORM P500-TRANSFERENCIA
-             END-READ
+                NOT INVALID KEY
                    DISPLAY 'QUAL O VALOR DA TRANSFERENCIA? '
                    ACCEPT WS-VALOR
                    MOVE ZEROS TO WS-AUX
@@ -170,7 +170,7 @@
                       PERFORM P500-TRANSFERENCIA
                    ELSE
                       MOVE WS-AUX TO SALDO
-                      WRITE REG-CONTA
+                      REWRITE REG-CONTA
 
                       DISPLAY 'QUAL CONTA IRA RECEBER A TRANSFERENCIA? '
                       ACCEPT FS-ID
@@ -190,14 +190,15 @@
                             PERFORM P200-MENU
                       END-READ
                    END-IF
+             END-READ
        .
       ******************************************************************
       *      FUNÇÃO QUE REALIZA UM DEPOSITO OU SAQUE EM UMA CONTA EXISTENTE
       ******************************************************************
        P600-DEP-SAQ.
              MOVE ZEROS TO WS-OPCAO
-             DISPLAY 'DIGITE 01 CASO QUERIA REALIZAR UM SAQUE OU '
-                     'DIGITE 02 CASO QUEIRA REALIZAR UM DEPOSITO '
+             DISPLAY 'DIGITE 02 CASO QUERIA REALIZAR UM SAQUE OU '
+                     'DIGITE 01 CASO QUEIRA REALIZAR UM DEPOSITO '
              ACCEPT WS-OPCAO
              EVALUATE WS-OPCAO
                 WHEN 1
@@ -208,17 +209,18 @@
                       INVALID KEY
                          DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                          PERFORM P600-DEP-SAQ
+                      NOT INVALID KEY
+                         DISPLAY 'QUAL O VALOR DA MOVIMENTACAO? '
+                         ACCEPT WS-VALOR
+                         COMPUTE WS-AUX = SALDO + WS-VALOR
+                         MOVE WS-AUX TO SALDO
+                         DISPLAY 'DEPOSITO REALIZADO COM SUCESSO! '
+                         DISPLAY 'O SALDO ATUAL DA CONTA ' CONTA-NUM
+                                 ' - ' SALDO
+                         DISPLAY 'RETORNANDO PARA O MENU...'
+                         REWRITE REG-CONTA
+                         PERFORM P200-MENU
                    END-READ
-                   DISPLAY 'QUAL O VALOR DA MOVIMENTACAO? '
-                   ACCEPT WS-VALOR
-                   COMPUTE WS-AUX = SALDO + WS-VALOR
-                   MOVE WS-AUX TO SALDO
-                   DISPLAY 'DEPOSITO REALIZADO COM SUCESSO! '
-                   DISPLAY 'O SALDO ATUAL DA CONTA ' CONTA-NUM
-                           ' - ' SALDO
-                   DISPLAY 'RETORNANDO PARA O MENU...'
-                   REWRITE REG-CONTA
-                   PERFORM P200-MENU
                 WHEN 2
                    DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
                    DISPLAY 'DIGITE O ID DA CONTA'
