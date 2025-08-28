@@ -57,7 +57,7 @@
                 END-IF.
 
              OPEN I-O ARQ-ID
-                 IF FS-ID EQUAL TO "35"
+                 IF FS-ID-STATUS EQUAL TO "35"
                    OPEN OUTPUT ARQ-ID
                    MOVE 0 TO ULT-CONTA
                    WRITE REG-CONTROLE
