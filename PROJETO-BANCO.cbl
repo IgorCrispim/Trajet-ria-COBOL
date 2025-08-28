@@ -28,6 +28,7 @@
        01 REG-CONTA.
           05 CONTA-NUM                 PIC 9(06).   *> chave primária
           05 NOME                      PIC X(30).
+          05 CPF                       PIC 9(11).
           05 SALDO                     PIC 9(07)V99.
 
        FD ARQ-ID.
@@ -108,6 +109,8 @@
        P300-CRIAR.
              DISPLAY 'DIGITE O NOME DO TITULAR DA CONTA: '
              ACCEPT NOME
+             DISPLAY 'DIGITE O CPF DO BENEFICIARIO: '
+             ACCEPT CPF
 
              READ ARQ-ID
              ADD 1 TO ULT-CONTA
@@ -150,6 +153,7 @@
                    DISPLAY 'DADOS DA CONTA ' FS-ID
                    DISPLAY '*******************************************'
                    DISPLAY 'NOME: '          NOME
+                   DISPLAY 'CPF: '           CPF
                    DISPLAY 'SALDO: '         SALDO
                    DISPLAY 'ID: '            CONTA-NUM
 
