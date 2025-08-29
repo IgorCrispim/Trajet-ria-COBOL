@@ -126,7 +126,7 @@
              ELSE
                 IF WS-ERRO LESS THAN 5 THEN
                    DISPLAY 'SENHA ERRADA, TENTE NOVAMENTE'
-                   WS-SENHA-2
+                   ACCEPT WS-SENHA-2
                 ELSE
                    DISPLAY 'MUITOS ERROS CONSECUTIVOS, REDIRECIONANDO '
                            'PARA O MENU PRINCIPAL...'
@@ -282,17 +282,27 @@
                             DISPLAY 'CONTA NAO ENCONTRADA,'
                                     ' TENTE NOVAMENTE'
                             PERFORM P600-DEP-SAQ
+                         END-IF
                       NOT INVALID KEY
-                         DISPLAY 'QUAL O VALOR DA MOVIMENTACAO? '
-                         ACCEPT WS-VALOR
-                         COMPUTE WS-AUX = SALDO + WS-VALOR
-                         MOVE WS-AUX TO SALDO
-                         DISPLAY 'DEPOSITO REALIZADO COM SUCESSO! '
-                         DISPLAY 'O SALDO ATUAL DA CONTA ' CONTA-NUM
+                         DISPLAY 'DIGITE A SENHA DA CONTA ' FS-ID
+                         ACCEPT WS-SENHA
+                         IF WS-SENHA NOT EQUAL TO SENHA THEN
+                            DISPLAY 'SENHA ERRADA,'
+                                    ' TRANSACAO CANCELADA! '
+                            PERFORM P200-MENU
+                         ELSE
+
+                            DISPLAY 'QUAL O VALOR DA MOVIMENTACAO? '
+                            ACCEPT WS-VALOR
+                            COMPUTE WS-AUX = SALDO + WS-VALOR
+                            MOVE WS-AUX TO SALDO
+                            DISPLAY 'DEPOSITO REALIZADO COM SUCESSO! '
+                            DISPLAY 'O SALDO ATUAL DA CONTA ' CONTA-NUM
                                  ' : ' SALDO
-                         DISPLAY 'RETORNANDO PARA O MENU...'
-                         REWRITE REG-CONTA
-                         PERFORM P200-MENU
+                            DISPLAY 'RETORNANDO PARA O MENU...'
+                            REWRITE REG-CONTA
+                            PERFORM P200-MENU
+                         END-IF
                    END-READ
                 WHEN 2
                    DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
@@ -311,21 +321,30 @@
                                     ' TENTE NOVAMENTE'
                             PERFORM P600-DEP-SAQ
                       NOT INVALID KEY
-                         DISPLAY 'QUAL O VALOR DA MOVIMENTACAO? '
-                         ACCEPT WS-VALOR
-                         IF WS-VALOR GREATER THAN SALDO THEN
-                            DISPLAY 'SALDO INSUFICIENTE, TRANSACAO '
-                                    'CANCELADA'
+                         DISPLAY 'DIGITE A SENHA DA CONTA ' FS-ID
+                         ACCEPT WS-SENHA
+                         IF WS-SENHA NOT EQUAL TO SENHA THEN
+                            DISPLAY 'SENHA ERRADA,'
+                                    ' TRANSACAO CANCELADA! '
                             PERFORM P200-MENU
                          ELSE
-                            COMPUTE WS-AUX = SALDO - WS-VALOR
-                            MOVE WS-AUX TO SALDO
-                            DISPLAY 'SAQUE REALIZADO COM SUCESSO! '
-                            DISPLAY 'O SALDO ATUAL DA CONTA ' CONTA-NUM
-                                    ' : ' SALDO
-                            DISPLAY 'RETORNANDO PARA O MENU...'
-                            REWRITE REG-CONTA
-                            PERFORM P200-MENU
+                            DISPLAY 'QUAL O VALOR DA MOVIMENTACAO? '
+                            ACCEPT WS-VALOR
+                            IF WS-VALOR GREATER THAN SALDO THEN
+                               DISPLAY 'SALDO INSUFICIENTE, TRANSACAO '
+                                       'CANCELADA'
+                               PERFORM P200-MENU
+                            ELSE
+                               COMPUTE WS-AUX = SALDO - WS-VALOR
+                               MOVE WS-AUX TO SALDO
+                               DISPLAY 'SAQUE REALIZADO COM SUCESSO! '
+                               DISPLAY 'O SALDO ATUAL DA CONTA '
+                                       CONTA-NUM
+                                       ' : ' SALDO
+                               DISPLAY 'RETORNANDO PARA O MENU...'
+                               REWRITE REG-CONTA
+                               PERFORM P200-MENU
+                            END-IF
                          END-IF
                    END-READ
              END-EVALUATE
