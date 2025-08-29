@@ -263,7 +263,8 @@
              END-READ
        .
       ******************************************************************
-      *      FUN플O QUE REALIZA UM DEPOSITO OU SAQUE EM UMA CONTA EXISTENTE
+      *      FUN플O QUE REALIZA UM DEPOSITO
+      *      OU SAQUE EM UMA CONTA EXISTENTE
       ******************************************************************
        P600-DEP-SAQ.
              MOVE ZEROS TO WS-OPCAO
@@ -358,7 +359,7 @@
        .
 
       ******************************************************************
-      *      FUN플O PARA TESTAR SE A SENHA EST� CORRETA
+      *      FUN플O PARA IMPRIMIR TODAS AS CONTAS EM UM RANGE DE ID
       ******************************************************************
        P700-IMPRIMIR-CONTAS.
              DISPLAY '*************************************************'
