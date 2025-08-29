@@ -29,7 +29,8 @@
           05 CONTA-NUM                 PIC 9(06).   *> chave primária
           05 NOME                      PIC X(30).
           05 CPF                       PIC 9(11).
-          05 SALDO                     PIC 9(07)V99.
+          05 SENHA                     PIC X(10).
+          05 SALDO                     PIC S9(07)V99.
 
        FD ARQ-ID.
        01 REG-CONTROLE.
@@ -40,9 +41,11 @@
        77 FS-ID-STATUS                 PIC XX.
        77 FS-ID                        PIC 9(06).
        77 WS-OPCAO                     PIC 9.
-       77 WS-VALOR                     PIC 9(07)V99.
-       77 WS-AUX                       PIC 9(07)V99.
+       77 WS-VALOR                     PIC S9(07)V99.
+       77 WS-AUX                       PIC S9(07)V99.
        77 WS-ERRO                      PIC 9 VALUE ZERO.
+       77 WS-SENHA                     PIC X(10).
+       77 WS-SENHA-2                   PIC X(10).
 
 
 
@@ -111,6 +114,29 @@
              ACCEPT NOME
              DISPLAY 'DIGITE O CPF DO BENEFICIARIO: '
              ACCEPT CPF
+             DISPLAY 'DIGITE A SUA SENHA DE ATE 10 CARACTERES'
+             ACCEPT WS-SENHA
+
+             MOVE ZEROS TO WS-ERRO
+             PERFORM UNTIL WS-SENHA EQUAL TO WS-SENHA-2
+             ADD 1 TO WS-ERRO
+             IF WS-ERRO LESS THAN 2 THEN
+                DISPLAY 'CONFIRME A SENHA DIGITADA ANTERIORMENTE'
+                ACCEPT WS-SENHA-2
+             ELSE
+                IF WS-ERRO LESS THAN 5 THEN
+                   DISPLAY 'SENHA ERRADA, TENTE NOVAMENTE'
+                   WS-SENHA-2
+                ELSE
+                   DISPLAY 'MUITOS ERROS CONSECUTIVOS, REDIRECIONANDO '
+                           'PARA O MENU PRINCIPAL...'
+                   PERFORM P200-MENU
+                END-IF
+             END-IF
+             END-PERFORM
+
+             MOVE WS-SENHA TO SENHA
+
 
              READ ARQ-ID
              ADD 1 TO ULT-CONTA
@@ -174,50 +200,60 @@
                    DISPLAY 'CONTA NAO ENCONTRADA, TENTE NOVAMENTE'
                    PERFORM P500-TRANSFERENCIA
                 NOT INVALID KEY
-                   DISPLAY 'QUAL O VALOR DA TRANSFERENCIA? '
-                   ACCEPT WS-VALOR
-                   MOVE ZEROS TO WS-AUX
-                   COMPUTE WS-AUX = SALDO - WS-VALOR
-                   IF SALDO EQUAL TO 0 OR WS-AUX LESS THAN 0 THEN
-                      ADD 1 TO WS-ERRO
-                      IF WS-ERRO GREATER THAN 3 THEN
-                         DISPLAY 'MUITOS ERROS CONSECUTIVOS'
-                         DISPLAY 'REDIRECIONANDO PARA O MENU...'
-                         PERFORM P200-MENU
-                      ELSE
-                         DISPLAY 'CONTA COM SAUDO INSUFICIENTE'
-                         DISPLAY 'O SALDO DA CONTA ' CONTA-NUM
-                                 ' : ' SALDO
-                         DISPLAY 'TENTE NOVAMENTE!'
-                         PERFORM P500-TRANSFERENCIA
+                   DISPLAY 'DIGITE A SENHA DA CONTA ' FS-ID
+                   ACCEPT WS-SENHA
+                   IF WS-SENHA NOT EQUAL TO SENHA THEN
+                      DISPLAY 'SENHA ERRADA, TRANSACAO CANCELADA! '
+                      PERFORM P200-MENU
                    ELSE
-                      MOVE WS-AUX TO SALDO
-                      REWRITE REG-CONTA
-
-                      DISPLAY 'QUAL CONTA IRA RECEBER A TRANSFERENCIA? '
-                      ACCEPT FS-ID
-                      MOVE FS-ID TO CONTA-NUM
-                      READ ARQ-CONTA RECORD KEY IS CONTA-NUM
-                         INVALID KEY
-                            ADD 1 TO WS-ERRO
-                            IF WS-ERRO GREATER THAN 3 THEN
-                               DISPLAY 'MUITOS ERROS CONSECUTIVOS'
-                               DISPLAY 'REDIRECIONANDO PARA O MENU...'
-                               PERFORM P200-MENU
-                            ELSE
-                               DISPLAY 'CONTA NAO ENCONTRADA, '
-                                       'TENTE NOVAMENTE'
-                               PERFORM P500-TRANSFERENCIA
-                         NOT INVALID KEY
-                            MOVE ZEROS TO WS-AUX
-                            COMPUTE WS-AUX = SALDO + WS-VALOR
-                            MOVE WS-AUX TO SALDO
-
-                            REWRITE REG-CONTA
-                            DISPLAY 'TRANSFERENCIA FEITA COM SUCESSO!'
-                            DISPLAY 'RETORNANDO PARA O MENU...'
+                      DISPLAY 'QUAL O VALOR DA TRANSFERENCIA? '
+                      ACCEPT WS-VALOR
+                      MOVE ZEROS TO WS-AUX
+                      COMPUTE WS-AUX = SALDO - WS-VALOR
+                      IF SALDO EQUAL TO 0 OR WS-AUX LESS THAN 0 THEN
+                         ADD 1 TO WS-ERRO
+                         IF WS-ERRO GREATER THAN 3 THEN
+                            DISPLAY 'MUITOS ERROS CONSECUTIVOS'
+                            DISPLAY 'REDIRECIONANDO PARA O MENU...'
                             PERFORM P200-MENU
-                      END-READ
+                         ELSE
+                            DISPLAY 'CONTA COM SAUDO INSUFICIENTE'
+                            DISPLAY 'O SALDO DA CONTA ' CONTA-NUM
+                                    ' : ' SALDO
+                            DISPLAY 'TENTE NOVAMENTE!'
+                            PERFORM P500-TRANSFERENCIA
+                      ELSE
+                         MOVE WS-AUX TO SALDO
+                         REWRITE REG-CONTA
+
+                         DISPLAY 'QUAL CONTA IRA RECEBER A'
+                                 ' TRANSFERENCIA? '
+                         ACCEPT FS-ID
+                         MOVE FS-ID TO CONTA-NUM
+                         READ ARQ-CONTA RECORD KEY IS CONTA-NUM
+                            INVALID KEY
+                               ADD 1 TO WS-ERRO
+                               IF WS-ERRO GREATER THAN 3 THEN
+                                  DISPLAY 'MUITOS ERROS CONSECUTIVOS'
+                                  DISPLAY 'REDIRECIONANDO PARA O'
+                                          ' MENU...'
+                                  PERFORM P200-MENU
+                               ELSE
+                                  DISPLAY 'CONTA NAO ENCONTRADA, '
+                                          'TENTE NOVAMENTE'
+                                  PERFORM P500-TRANSFERENCIA
+                            NOT INVALID KEY
+                               MOVE ZEROS TO WS-AUX
+                               COMPUTE WS-AUX = SALDO + WS-VALOR
+                               MOVE WS-AUX TO SALDO
+
+                               REWRITE REG-CONTA
+                               DISPLAY 'TRANSFERENCIA FEITA COM'
+                                       ' SUCESSO!'
+                               DISPLAY 'RETORNANDO PARA O MENU...'
+                               PERFORM P200-MENU
+                         END-READ
+                      END-IF
                    END-IF
              END-READ
        .
@@ -296,6 +332,11 @@
 
 
        .
+
+      ******************************************************************
+      *      FUNÇÃO PARA TESTAR SE A SENHA ESTÁ CORRETA
+      ******************************************************************
+       P700-TESTE-SENHA.
 
       ******************************************************************
       *      FUNÇÃO PARA FINALIZAR O PROGRAMA
