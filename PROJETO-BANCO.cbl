@@ -46,6 +46,8 @@
        77 WS-ERRO                      PIC 9 VALUE ZERO.
        77 WS-SENHA                     PIC X(10).
        77 WS-SENHA-2                   PIC X(10).
+       77 WS-RANGE                     PIC 9(06).
+       77 WS-RANGE-2                   PIC 9(06).
 
 
 
@@ -83,10 +85,11 @@
              DISPLAY '02 - CONSULTAR INFORMACOES DE UMA CONTA'
              DISPLAY '03 - REALIZAR UMA TRANSFERENCIA BANCARIA'
              DISPLAY '04 - REALIZAR UM DEPOSITO OU SAQUE DE SUA CONTA'
-             DISPLAY '05 - FINALIZAR O PROGRAMA'
+             DISPLAY '05 - IMPRIMIR TODAS AS CONTAS EM UM RANGE DE ID'
+             DISPLAY '06 - FINALIZAR O PROGRAMA'
              ACCEPT WS-OPCAO
 
-             IF WS-OPCAO > 5 OR WS-OPCAO < 1
+             IF WS-OPCAO > 6 OR WS-OPCAO < 1
                 DISPLAY 'OPERACAO INEXISTENTE, TENTE NOVAMENTE!'
                 PERFORM P200-MENU
              END-IF
@@ -102,6 +105,8 @@
                 WHEN 4
                    PERFORM P600-DEP-SAQ
                 WHEN 5
+                   PERFORM P700-IMPRIMIR-CONTAS
+                WHEN 6
                    PERFORM P900-TERMINAL
 
              END-EVALUATE
@@ -355,8 +360,34 @@
       ******************************************************************
       *      FUNÇÃO PARA TESTAR SE A SENHA ESTÁ CORRETA
       ******************************************************************
-       P700-TESTE-SENHA.
+       P700-IMPRIMIR-CONTAS.
+             DISPLAY '*************************************************'
+             MOVE ZEROS TO WS-RANGE
+                           WS-RANGE-2
+             DISPLAY 'DIGITE O RANGE DE CONTAS QUE DESEJA MOSTRAR'
+             DISPLAY 'DIGITE O LIMITE INFERIOR'
+             ACCEPT WS-RANGE
+             DISPLAY 'DIGITE O LIMITE SUPERIOR'
+             ACCEPT WS-RANGE-2
+             MOVE WS-RANGE TO CONTA-NUM
+             SUBTRACT 1 FROM CONTA-NUM
 
+             PERFORM VARYING WS-RANGE FROM WS-RANGE BY 1
+             UNTIL WS-RANGE > WS-RANGE-2
+                ADD 1 TO CONTA-NUM
+                READ ARQ-CONTA RECORD KEY IS CONTA-NUM
+                   INVALID KEY
+                      DISPLAY '****************************************'
+                   NOT INVALID KEY
+                      DISPLAY '****************************************'
+                      DISPLAY 'CONTA: ' CONTA-NUM
+                      DISPLAY 'NOME: '  NOME
+                      DISPLAY 'CPF: '   CPF
+                      DISPLAY 'SALDO: ' SALDO
+
+             END-PERFORM
+             PERFORM P200-MENU
+       .
       ******************************************************************
       *      FUNÇÃO PARA FINALIZAR O PROGRAMA
       ******************************************************************
