@@ -48,6 +48,8 @@
        77 WS-SENHA-2                   PIC X(10).
        77 WS-RANGE                     PIC 9(06).
        77 WS-RANGE-2                   PIC 9(06).
+       77 WS-INDEX                     PIC 9(38).
+       77 WS-ID-RENDA                  PIC 9(06).
 
 
 
@@ -86,10 +88,11 @@
              DISPLAY '03 - REALIZAR UMA TRANSFERENCIA BANCARIA'
              DISPLAY '04 - REALIZAR UM DEPOSITO OU SAQUE DE SUA CONTA'
              DISPLAY '05 - IMPRIMIR TODAS AS CONTAS EM UM RANGE DE ID'
-             DISPLAY '06 - FINALIZAR O PROGRAMA'
+             DISPLAY '06 - IMPRIMIR A CONTA COM MAIOR SALDO ARMAZENADO'
+             DISPLAY '07 - FINALIZAR O PROGRAMA'
              ACCEPT WS-OPCAO
 
-             IF WS-OPCAO > 6 OR WS-OPCAO < 1
+             IF WS-OPCAO > 7 OR WS-OPCAO < 1
                 DISPLAY 'OPERACAO INEXISTENTE, TENTE NOVAMENTE!'
                 PERFORM P200-MENU
              END-IF
@@ -107,6 +110,8 @@
                 WHEN 5
                    PERFORM P700-IMPRIMIR-CONTAS
                 WHEN 6
+                   PERFORM P800-MAIOR-CLIENTE
+                WHEN 7
                    PERFORM P900-TERMINAL
 
              END-EVALUATE
@@ -270,7 +275,7 @@
              MOVE ZEROS TO WS-OPCAO
              DISPLAY 'DIGITE 01 CASO QUEIRA REALIZAR UM DEPOSITO '
              DISPLAY 'DIGITE 02 CASO QUERIA REALIZAR UM SAQUE '
-             ACCEPT WS-OPCAO
+             ACCEPT   WS-OPCAO
              EVALUATE WS-OPCAO
                 WHEN 1
                    DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
@@ -387,6 +392,40 @@
                       DISPLAY 'SALDO: ' SALDO
 
              END-PERFORM
+             PERFORM P200-MENU
+       .
+
+      ******************************************************************
+      *      FUNÇÃO PARA IMPRIMIR O CLIENTE COM MAIS DINHEIRO GUARDADO
+      ******************************************************************
+       P800-MAIOR-CLIENTE.
+             DISPLAY 'PROCURANDO O CLIENTE COM MAIOR QUANTIDADE DE '
+                     'DINHEIRO GUARDADO DENTRO DO BANCO '
+             DISPLAY 'ESSA AÇÃO PODE SER DEMORADA...'
+             MOVE ZEROS TO WS-AUX
+
+             READ ARQ-ID
+             MOVE ULT-CONTA TO FS-ID
+             PERFORM VARYING WS-INDEX FROM 1 BY 1 UNTIL WS-INDEX > FS-ID
+                MOVE WS-INDEX TO CONTA-NUM
+                READ ARQ-CONTA RECORD KEY IS CONTA-NUM
+                   NOT INVALID KEY
+                      IF SALDO IS GREATER THAN WS-AUX
+                         MOVE SALDO        TO WS-AUX
+                         MOVE CONTA-NUM    TO WS-ID-RENDA
+                END-READ
+             END-PERFORM
+
+             MOVE WS-ID-RENDA TO CONTA-NUM
+             READ ARQ-CONTA RECORD KEY IS CONTA-NUM
+                NOT INVALID KEY
+                   DISPLAY 'A CONTA COM MAIS DINHEIRO GUARDADO NO BANCO'
+                   DISPLAY '*******************************************'
+                   DISPLAY 'ID: '    CONTA-NUM
+                   DISPLAY 'NOME: '  NOME
+                   DISPLAY 'CPF: '   CPF
+                   DISPLAY 'SALDO: ' SALDO
+             END-READ
              PERFORM P200-MENU
        .
       ******************************************************************
