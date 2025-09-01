@@ -40,7 +40,7 @@
        77 FS-CONTA                     PIC XX.
        77 FS-ID-STATUS                 PIC XX.
        77 FS-ID                        PIC 9(06).
-       77 WS-OPCAO                     PIC 9.
+       77 WS-OPCAO                     PIC 99.
        77 WS-VALOR                     PIC S9(07)V99.
        77 WS-AUX                       PIC S9(07)V99.
        77 WS-ERRO                      PIC 9 VALUE ZERO.
@@ -91,10 +91,11 @@
              DISPLAY '06 - IMPRIMIR A CONTA COM MAIOR SALDO ARMAZENADO'
              DISPLAY '07 - REALIZAR UM EMPRESTIMO COM O BANCO'
              DISPLAY '08 - PROCURAR O MAIOR DEVEDOR DO BANCO'
-             DISPLAY '09 - FINALIZAR O PROGRAMA'
+             display '09 - IMPRIMIR TODAS AS CONTAS DEVEDORAS'
+             DISPLAY '10 - FINALIZAR O PROGRAMA'
              ACCEPT WS-OPCAO
 
-             IF WS-OPCAO > 9 OR WS-OPCAO < 1
+             IF WS-OPCAO > 10 OR WS-OPCAO < 1
                 DISPLAY 'OPERACAO INEXISTENTE, TENTE NOVAMENTE!'
                 PERFORM P200-MENU
              END-IF
@@ -118,7 +119,9 @@
                 WHEN 8
                    PERFORM P1000-MAIOR-DEVEDOR
                 WHEN 9
-                   PERFORM P1100-TERMINAL
+                   PERFORM P1100-IMPRIMIR-DEVEDORES
+                WHEN 10
+                   PERFORM P1200-TERMINAL
 
              END-EVALUATE
        .
@@ -373,7 +376,7 @@
       *      FUNÇÃO PARA IMPRIMIR TODAS AS CONTAS EM UM RANGE DE ID
       ******************************************************************
        P700-IMPRIMIR-CONTAS.
-             DISPLAY '*************************************************'
+
              MOVE ZEROS TO WS-RANGE
                            WS-RANGE-2
              DISPLAY 'DIGITE O RANGE DE CONTAS QUE DESEJA MOSTRAR'
@@ -464,7 +467,8 @@
                             PERFORM P200-MENU
                          ELSE
 
-                            DISPLAY 'QUAL O VALOR DO EMPRESTIMO ? '
+                            DISPLAY 'QUAL O VALOR DO EMPRESTIMO? '
+                            DISPLAY 'LEMBRANDO QUE O JUROS E DE 12,5%'
                             ACCEPT WS-VALOR
                             COMPUTE WS-VALOR = WS-VALOR *1.125
                             DISPLAY 'O VALOR DA SUA DIVIDA COM O BANCO'
@@ -524,7 +528,46 @@
       ******************************************************************
       *      FUNÇÃO PARA FINALIZAR O PROGRAMA
       ******************************************************************
-       P1100-TERMINAL.
+       P1100-IMPRIMIR-DEVEDORES.
+             DISPLAY 'IMPRIMINDO TODAS AS CONTAS DEVEDORAS'
+
+             READ ARQ-ID
+             MOVE ULT-CONTA TO FS-ID
+             MOVE ZEROS TO WS-INDEX
+
+             PERFORM VARYING WS-INDEX FROM 1 BY 1 UNTIL WS-INDEX > FS-ID
+                MOVE WS-INDEX TO CONTA-NUM
+
+                READ ARQ-CONTA RECORD KEY IS CONTA-NUM
+                   NOT INVALID KEY
+
+                      IF SALDO IS LESS THAN 0
+                         DISPLAY '*************************************'
+                         DISPLAY 'ID: '    CONTA-NUM
+                         DISPLAY 'NOME: '  NOME
+                         DISPLAY 'CPF: '   CPF
+                         DISPLAY 'SALDO: ' SALDO
+
+
+                      END-IF
+
+                END-READ
+
+
+
+             END-PERFORM
+
+
+             PERFORM P200-MENU
+
+
+
+
+       .
+      ******************************************************************
+      *      FUNÇÃO PARA FINALIZAR O PROGRAMA
+      ******************************************************************
+       P1200-TERMINAL.
             CLOSE ARQ-CONTA.
             CLOSE ARQ-ID.
             STOP RUN.
