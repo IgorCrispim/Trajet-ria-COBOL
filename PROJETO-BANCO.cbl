@@ -40,7 +40,6 @@
        77 FS-CONTA                     PIC XX.
        77 FS-ID-STATUS                 PIC XX.
        77 FS-ID                        PIC 9(06).
-       77 WS-OPCAO                     PIC 99.
        77 WS-VALOR                     PIC S9(07)V99.
        77 WS-AUX                       PIC S9(07)V99.
        77 WS-ERRO                      PIC 9 VALUE ZERO.
@@ -50,6 +49,9 @@
        77 WS-RANGE-2                   PIC 9(06).
        77 WS-INDEX                     PIC 9(38).
        77 WS-ID-RENDA                  PIC 9(06).
+
+       01 WS-OPCAO                     PIC 99.
+          88 WS-OPCOES                 VALUE 1 THRU 10.
 
 
 
@@ -95,11 +97,6 @@
              DISPLAY '10 - FINALIZAR O PROGRAMA'
              ACCEPT WS-OPCAO
 
-             IF WS-OPCAO > 10 OR WS-OPCAO < 1
-                DISPLAY 'OPERACAO INEXISTENTE, TENTE NOVAMENTE!'
-                PERFORM P200-MENU
-             END-IF
-
              EVALUATE WS-OPCAO
 
                 WHEN 1
@@ -122,6 +119,9 @@
                    PERFORM P1100-IMPRIMIR-DEVEDORES
                 WHEN 10
                    PERFORM P1200-TERMINAL
+                WHEN OTHER
+                   DISPLAY 'OPCAO INVALIDA, TENTE NOVAMENTE'
+                   PERFORM P200-MENU
 
              END-EVALUATE
        .
