@@ -89,10 +89,11 @@
              DISPLAY '04 - REALIZAR UM DEPOSITO OU SAQUE DE SUA CONTA'
              DISPLAY '05 - IMPRIMIR TODAS AS CONTAS EM UM RANGE DE ID'
              DISPLAY '06 - IMPRIMIR A CONTA COM MAIOR SALDO ARMAZENADO'
-             DISPLAY '07 - FINALIZAR O PROGRAMA'
+             DISPLAY '07 - REALIZAR UM EMPRESTIMO COM O BANCO'
+             DISPLAY '08 - FINALIZAR O PROGRAMA'
              ACCEPT WS-OPCAO
 
-             IF WS-OPCAO > 7 OR WS-OPCAO < 1
+             IF WS-OPCAO > 8 OR WS-OPCAO < 1
                 DISPLAY 'OPERACAO INEXISTENTE, TENTE NOVAMENTE!'
                 PERFORM P200-MENU
              END-IF
@@ -112,7 +113,9 @@
                 WHEN 6
                    PERFORM P800-MAIOR-CLIENTE
                 WHEN 7
-                   PERFORM P900-TERMINAL
+                   PERFORM P900-EMPRESTIMO
+                WHEN 8
+                   PERFORM P1000-TERMINAL
 
              END-EVALUATE
        .
@@ -428,10 +431,61 @@
              END-READ
              PERFORM P200-MENU
        .
+
+      ******************************************************************
+      *      FUNÇÃO PARA PEGAR UM EMPRÉSTIMO COM O BANCO
+      ******************************************************************
+       P900-EMPRESTIMO.
+             DISPLAY 'QUAL CONTA IRA REALIZAR A MOVIMENTACAO? '
+                   DISPLAY 'DIGITE O ID DA CONTA'
+                   ACCEPT FS-ID
+                   MOVE FS-ID TO CONTA-NUM
+                   READ ARQ-CONTA RECORD KEY IS CONTA-NUM
+                      INVALID KEY
+                         ADD 1 TO WS-ERRO
+                         IF WS-ERRO GREATER THAN 3 THEN
+                            DISPLAY 'MUITOS ERROS CONSECUTIVOS'
+                            DISPLAY 'REDIRECIONANDO PARA O MENU...'
+                            PERFORM P200-MENU
+                         ELSE
+                            DISPLAY 'CONTA NAO ENCONTRADA,'
+                                    ' TENTE NOVAMENTE'
+                            PERFORM P900-EMPRESTIMO
+                         END-IF
+                      NOT INVALID KEY
+                         DISPLAY 'DIGITE A SENHA DA CONTA ' FS-ID
+                         ACCEPT WS-SENHA
+                         IF WS-SENHA NOT EQUAL TO SENHA THEN
+                            DISPLAY 'SENHA ERRADA,'
+                                    ' TRANSACAO CANCELADA! '
+                            PERFORM P200-MENU
+                         ELSE
+
+                            DISPLAY 'QUAL O VALOR DO EMPRESTIMO ? '
+                            ACCEPT WS-VALOR
+                            COMPUTE WS-VALOR = WS-VALOR *1.125
+                            DISPLAY 'O VALOR DA SUA DIVIDA COM O BANCO'
+                                    ' SERIA DE R$'WS-VALOR
+                            MOVE ZEROS     TO WS-AUX
+                            COMPUTE WS-AUX = SALDO - WS-VALOR
+                            MOVE WS-AUX    TO SALDO
+                            DISPLAY 'EMPRESTIMO REALIZADO COM SICESSO! '
+                            DISPLAY 'O SALDO ATUAL DA CONTA ' CONTA-NUM
+                                 ' : ' SALDO
+                            DISPLAY 'RETORNANDO PARA O MENU...'
+                            REWRITE REG-CONTA
+                            PERFORM P200-MENU
+                         END-IF
+                   END-READ
+
+             PERFORM P200-MENU
+
+
+       .
       ******************************************************************
       *      FUNÇÃO PARA FINALIZAR O PROGRAMA
       ******************************************************************
-       P900-TERMINAL.
+       P1000-TERMINAL.
             CLOSE ARQ-CONTA.
             CLOSE ARQ-ID.
             STOP RUN.
