@@ -207,7 +207,8 @@
              END-READ
        .
       ******************************************************************
-      *      FUN플O QUE REALIZA UMA TRANSFERENCIA BANCARIA ENTRE DUAS CONTAS
+      *      FUN플O QUE REALIZA UMA TRANSFERENCIA BANCARIA
+      *                     ENTRE DUAS CONTAS
       ******************************************************************
        P500-TRANSFERENCIA.
              DISPLAY 'QUAL CONTA IRA REALIZAR A TRANSFERENCIA? '
@@ -490,7 +491,7 @@
 
        .
       ******************************************************************
-      *      FUN플O PARA FINALIZAR O PROGRAMA
+      *      FUN플O PARA IMPRIMIR O MAIOR DEVEDOR DO BANCO
       ******************************************************************
        P1000-MAIOR-DEVEDOR.
 
@@ -526,7 +527,7 @@
 
        .
       ******************************************************************
-      *      FUN플O PARA FINALIZAR O PROGRAMA
+      *      FUN플O PARA IMPRIMIR LISTA DE TODOS OS DEVEDORES
       ******************************************************************
        P1100-IMPRIMIR-DEVEDORES.
              DISPLAY 'IMPRIMINDO TODAS AS CONTAS DEVEDORAS'
