@@ -90,10 +90,11 @@
              DISPLAY '05 - IMPRIMIR TODAS AS CONTAS EM UM RANGE DE ID'
              DISPLAY '06 - IMPRIMIR A CONTA COM MAIOR SALDO ARMAZENADO'
              DISPLAY '07 - REALIZAR UM EMPRESTIMO COM O BANCO'
-             DISPLAY '08 - FINALIZAR O PROGRAMA'
+             DISPLAY '08 - PROCURAR O MAIOR DEVEDOR DO BANCO'
+             DISPLAY '09 - FINALIZAR O PROGRAMA'
              ACCEPT WS-OPCAO
 
-             IF WS-OPCAO > 8 OR WS-OPCAO < 1
+             IF WS-OPCAO > 9 OR WS-OPCAO < 1
                 DISPLAY 'OPERACAO INEXISTENTE, TENTE NOVAMENTE!'
                 PERFORM P200-MENU
              END-IF
@@ -115,7 +116,9 @@
                 WHEN 7
                    PERFORM P900-EMPRESTIMO
                 WHEN 8
-                   PERFORM P1000-TERMINAL
+                   PERFORM P1000-MAIOR-DEVEDOR
+                WHEN 9
+                   PERFORM P1100-TERMINAL
 
              END-EVALUATE
        .
@@ -485,7 +488,43 @@
       ******************************************************************
       *      FUNÇÃO PARA FINALIZAR O PROGRAMA
       ******************************************************************
-       P1000-TERMINAL.
+       P1000-MAIOR-DEVEDOR.
+
+             DISPLAY 'PROCURANDO O CLIENTE COM MAIOR QUANTIDADE DE '
+                     'DINHEIRO GUARDADO DENTRO DO BANCO '
+             DISPLAY 'ESSA AÇÃO PODE SER DEMORADA...'
+             MOVE ZEROS TO WS-AUX
+
+             READ ARQ-ID
+             MOVE ULT-CONTA TO FS-ID
+             PERFORM VARYING WS-INDEX FROM 1 BY 1 UNTIL WS-INDEX > FS-ID
+                MOVE WS-INDEX TO CONTA-NUM
+                READ ARQ-CONTA RECORD KEY IS CONTA-NUM
+                   NOT INVALID KEY
+                      IF  SALDO IS LESS THAN WS-AUX
+                      AND SALDO IS LESS THAN 0
+                         MOVE SALDO        TO WS-AUX
+                         MOVE CONTA-NUM    TO WS-ID-RENDA
+                END-READ
+             END-PERFORM
+
+             MOVE WS-ID-RENDA TO CONTA-NUM
+             READ ARQ-CONTA RECORD KEY IS CONTA-NUM
+                NOT INVALID KEY
+                   DISPLAY 'A CONTA QUE DEVE MAIS DINHEIRO AO BANCO'
+                   DISPLAY '*******************************************'
+                   DISPLAY 'ID: '    CONTA-NUM
+                   DISPLAY 'NOME: '  NOME
+                   DISPLAY 'CPF: '   CPF
+                   DISPLAY 'SALDO: ' SALDO
+             END-READ
+             PERFORM P200-MENU
+
+       .
+      ******************************************************************
+      *      FUNÇÃO PARA FINALIZAR O PROGRAMA
+      ******************************************************************
+       P1100-TERMINAL.
             CLOSE ARQ-CONTA.
             CLOSE ARQ-ID.
             STOP RUN.
